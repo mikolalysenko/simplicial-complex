@@ -39,5 +39,5 @@ A more optimized way to build an index for vertices.  Formally equivalent to the
 
 Credits
 =======
-
+(c) 2013 Mikola Lysenko.  MIT License
 
