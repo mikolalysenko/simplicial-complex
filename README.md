@@ -1,7 +1,13 @@
 mesh-topology
 =============
 
-Topological operations and indexing for simplicial complexes (ie triangular meshes, tetrahedral meshes, etc.)
+Topological operations and indexing for simplicial complexes (ie triangular meshes, tetrahedral meshes, etc.)  Cells in `mesh-topology` are represented as arrays of vertex indices.  For example, here is a triangular mesh:
+
+    var tris = [
+        [0,1,2],
+        [1,2,3],
+        [2,3,4]
+      ];
 
 
 `skeleton(cells, n)`

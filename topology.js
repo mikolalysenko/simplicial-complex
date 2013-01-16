@@ -45,7 +45,7 @@ function stars(cells, vertex_count) {
 exports.stars = stars;
 
 var lexCompare = new Function("a", "b", [
-  "for(var i=Math.min(a.length,b.length)-1; i>=0; --i) {",
+  "for(var i=0; i<Math.min(a.length,b.length); ++i) {",
     "var d = a[i] - b[i];",
     "if(d) { return d; }",
   "}",
@@ -63,9 +63,14 @@ function normalize(cells) {
   var ptr = 1;
   for(var i=1; i<cells.length; ++i) {
     if(lexCompare(cells[i], cells[i-1])) {
+      if(i === ptr) {
+        ptr++;
+        continue;
+      }
       var a = cells[i]
         , b = cells[ptr++];
-      for(var j=0; j<n; ++j) {
+      b.length = a.length;
+      for(var j=0; j<a.length; ++j) {
         b[j] = a[j];
       }
     }
@@ -104,7 +109,7 @@ function findCell(cells, c, sorted) {
   var lo = 0
     , hi = cells.length-1;
   while (lo <= hi) {
-    var mid = (lo + hi) >> 1;
+    var mid = (lo + hi) >> 1
       , s   = lexCompare(cells[mid], c);
     if(s < 0) {
       lo = mid + 1;
