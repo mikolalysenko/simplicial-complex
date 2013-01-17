@@ -86,7 +86,7 @@ function skeleton(cells, n) {
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var k=(1<<(n+1))-1; k<(1<<c.length); k=bits.nextCombination(k)) {
-      var b = new Array(n)
+      var b = new Array(n+1)
         , l = 0;
       for(var j=0; j<c.length; ++j) {
         if(k & (1<<j)) {
