@@ -8,7 +8,7 @@ function countVertices(cells) {
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<c.length; ++j) {
-      vc = Math.max(vc, f[j]);
+      vc = Math.max(vc, c[j]);
     }
   }
   return vc+1;
@@ -124,7 +124,7 @@ function findCell(cells, c, sorted) {
 exports.findCell = findCell;
 
 //Builds an index for an n-cell.  This is more general than stars, but less efficient
-function buildIndex(cells, n_skel, n) {
+function buildIndex(cells, n_skel) {
   var index = new Array(n_skel.length);
   for(var i=0; i<index.length; ++i) {
     index[i] = [];
@@ -132,8 +132,8 @@ function buildIndex(cells, n_skel, n) {
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i].slice(0);
     c.sort();
-    for(var k=(1<<(n+1))-1; k<(1<<c.length); k=bits.nextCombination(k)) {
-      var b = new Array(n)
+    for(var k=0; k<=(1<<c.length); ++k) {
+      var b = new Array(bits.popCount(k))
         , l = 0;
       for(var j=0; j<c.length; ++j) {
         if(k & (1<<j)) {

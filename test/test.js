@@ -12,6 +12,30 @@ function arr_equals(t, a, b) {
   }
 }
 
+
+test("countVertices", function(t) {
+
+  t.equals(top.countVertices([
+    [1,2,3],
+    [5, 6],
+    [1000, 1]
+  ]), 1001);
+  
+  t.end();
+});
+
+test("cloneCells", function(t) {
+
+  var a = [[1,2,3],[2,5]];
+  var b = top.cloneCells(a);
+  
+  b[0][0] = 10;
+  
+  t.equals(a[0][0], 1);
+
+  t.end();
+});
+
 test("normalize", function(t) {
 
   var r = [[6, 2, 3], [1, 2, 4], [0, 5, 1], [1], [5,0,1]];
@@ -67,3 +91,8 @@ test("skeleton", function(t) {
 
   t.end();
 });
+
+test("findCell", function(t) {
+
+});
+
