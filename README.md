@@ -1,13 +1,40 @@
 mesh-topology
 =============
 
-Topological operations and indexing for simplicial complexes (ie triangular meshes, tetrahedral meshes, etc.)  Cells in `mesh-topology` are represented as arrays of vertex indices.  For example, here is a triangular mesh:
+Topological operations and indexing for simplicial complexes (ie triangular meshes, tetrahedral meshes, etc.) in node.js.
+
+Usage
+=====
+
+First, you need to install the library using npm:
+
+    npm install mesh-topology
+
+    
+And then in your scripts, you can just require it like usual:
+
+    var top = require("mesh-topology");
+
+Cell complexes in `mesh-topology` are represented as arrays of vertex indices.  For example, here is a triangular mesh:
 
     var tris = [
         [0,1,2],
         [1,2,3],
         [2,3,4]
       ];
+      
+And here is how you would compute its edges using `mesh-topology`:
+
+    var edges = top.skeleton(tris, 1);
+    
+    //Result:
+    //  edges = [ [0,1],
+    //            [0,2],
+    //            [1,2],
+    //            [1,3],
+    //            [2,3],
+    //            [2,4],
+    //            [3,4] ]
 
 
 `skeleton(cells, n)`
