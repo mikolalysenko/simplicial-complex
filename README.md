@@ -90,7 +90,7 @@ Time complexity: `O(d * 2^d * base_cells.length * log(query_cells.length))`, whe
 
 `boundary(cells, d)`
 --------------------
-Computes the [d-dimensional boundary](http://en.wikipedia.org/wiki/Boundary_(topology)) of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.
+Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.
 
 * `cells` is a cell complex.
 * `d` is the dimension of the boundary we are computing.
@@ -101,7 +101,7 @@ Time complexity: `O(cells.length * (dimension(cells)^d + log(cells.length)))`
 
 `connectedComponents(cells[, vertex_count])`
 --------------------------------------------
-Splits a simplicial complex into its [connected components](http://en.wikipedia.org/wiki/Connected_component_(topology)).  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
+Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
 
 * `cells` is an array of cells
 * `vertex_count` (optional) is the result of calling `countVertices(cells)` or in other words is the total number of vertices.
