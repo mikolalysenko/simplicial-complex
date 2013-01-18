@@ -135,13 +135,13 @@ function findCell(cells, c, sorted) {
 exports.findCell = findCell;
 
 //Builds an index for an n-cell.  This is more general than stars, but less efficient
-function buildIndex(cells, n_skel) {
-  var index = new Array(n_skel.length);
+function buildIndex(from_cells, to_cells) {
+  var index = new Array(from_cells.length);
   for(var i=0; i<index.length; ++i) {
     index[i] = [];
   }
-  for(var i=0; i<cells.length; ++i) {
-    var c = cells[i].slice(0);
+  for(var i=0; i<to_cells.length; ++i) {
+    var c = to_cells[i].slice(0);
     c.sort();
     for(var k=0; k<=(1<<c.length); ++k) {
       var b = new Array(bits.popCount(k))
@@ -151,13 +151,13 @@ function buildIndex(cells, n_skel) {
           b[l++] = c[j];
         }
       }
-      var idx = findCell(n_skel, b, true);
+      var idx = findCell(from_cells, b, true);
       if(idx >= 0) {
         index[idx].push(i);
       }
     }
   }
-  return idx;
+  return index;
 }
 exports.buildIndex = buildIndex;
 

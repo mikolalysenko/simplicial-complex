@@ -52,7 +52,7 @@ Example:
 * `skeleton(tets, 2)` returns all the faces of a tetrahedral mesh
 * `skeleton(cells, 0)` returns all the vertices of a mesh
 
-Time complexity:  `O( cells.length * (d choose n) )`, where d is the `dimension` of the cell complex
+Time complexity:  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
 
 `normalize(cells)`
 ------------------
@@ -62,7 +62,7 @@ Canonicalizes a cell complex.  Sorts all cells lexicographically and removes dup
 
 Note that this function is done **in place**.  `cells` will be mutated.  If this is not acceptable, you should make a copy first using `cloneCells`.
 
-Time complexity: `O(d * cells.length * log(cells.length) )`
+Time complexity: `O(d * log(cells.length) * cells.length )`
 
 `findCell(cells, c, sorted)`
 -----------------------------
@@ -76,16 +76,16 @@ Returns: The index of `c` in the array if it exists, otherwise -1
 
 Time complexity: `O(d * log(cells.length))`, where `d` is the max of the dimension of `cells` and `c`
 
-`buildIndex(base_cells, query_cells)`
+`buildIndex(from_cells, to_cells)`
 ------------------------------
-Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation).  This allows you to quickly find cells the in `base_cells` which are incident to `query_cells`.
+Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation).  This allows you to quickly find cells the in `to_cells` which are incident to cells in `from_cells`.
 
-* `base_cells` is any array of cells
-* `query_cells` is a `normalize`d array of cells
+* `from_cells` a `normalize`d array of cells
+* `to_cells` a list of cells which we are going to query against
 
-Returns: An array with the same length as `query_cells`, each entry of which is an array of all cells in `base_cells` which are incident to `query_cells[i]`.
+Returns: An array with the same length as `from_cells`, the `i`th entry of which is an array of indices into `to_cells` which are incident to `from_cells[i]`.
 
-Time complexity: `O(d * 2^d * base_cells.length * log(query_cells.length))`, where `d` is the larger dimension of either `base_cells` and `query_cells`.
+Time complexity: `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
 
 
 `boundary(cells, d)`
@@ -97,7 +97,7 @@ Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimens
 
 Returns: An array of `d`-dimensional cells representing the boundary of the cell complex.
 
-Time complexity: `O(cells.length * (dimension(cells)^d + log(cells.length)))`
+Time complexity: `O((dimension(cells)^d + log(cells.length)) * cells.length)`
 
 `connectedComponents(cells[, vertex_count])`
 --------------------------------------------
@@ -121,7 +121,7 @@ Makes a copy of a cell complex
 
 Returns: A deep copy of the cell complex
 
-Time complexity: `O(cells.length * d)`
+Time complexity: `O(d * cells.length)`
 
 
 `dimension(cells)`

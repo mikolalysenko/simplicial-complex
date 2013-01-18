@@ -136,9 +136,53 @@ test("findCell", function(t) {
 });
 
 test("buildIndex", function(t) {
-
+  var base_cells = [
+    [0,1,2],
+    [0,1,3],
+    [0,2,3],
+    [1,2,3]
+  ];
+  var query_cells = [
+    [0,1],
+    [0,2],
+    [1,2],
+    [1,3],
+    [2,3]
+  ];
+  var index = top.buildIndex(base_cells, query_cells);
+  t.equals(index.length, query_cells.length);
+  for(var i=0; i<query_cells.length; ++i) {
+    var incident = index[i]
+      , cell     = query_cells[i];
+    for(var j=0; j<incident.length; ++j) {
+     
+     
+     
+    }
+  }
   
+  
+  
+  t.end();
+});
 
+
+
+test("stars", function(t) {
+  t.end();
+});
+
+test("boundary", function(t) {
+  t.end();
+});
+
+test("connectedComponents_sparse", function(t) {
+
+  t.end();
+});
+
+test("connectedComponents_dense", function(t) {
+  t.end();
 });
 
 
