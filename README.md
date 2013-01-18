@@ -36,6 +36,8 @@ And here is how you would compute its edges using `mesh-topology`:
     //            [2,4],
     //            [3,4] ]
 
+`mesh-topology` exports the following methods:
+
 
 `skeleton(cells, n)`
 --------------------
@@ -50,7 +52,7 @@ Example:
 * `skeleton(tets, 2)` returns all the faces of a tetrahedral mesh
 * `skeleton(cells, 0)` returns all the vertices of a mesh
 
-Time complexity:  `O( cells.length * (d choose n) )`, where d is the dimension of the cell complex.
+Time complexity:  `O( cells.length * (d choose n) )`, where d is the `dimension` of the cell complex
 
 `normalize(cells)`
 ------------------
@@ -85,6 +87,32 @@ Returns: An array with the same length as `query_cells`, each entry of which is 
 
 Time complexity: `O(d * 2^d * base_cells.length * log(query_cells.length))`, where `d` is the larger dimension of either `base_cells` and `query_cells`.
 
+
+`boundary(cells, d)`
+--------------------
+Computes the [d-dimensional boundary](http://en.wikipedia.org/wiki/Boundary_(topology)) of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.
+
+* `cells` is a cell complex.
+* `d` is the dimension of the boundary we are computing.
+
+Returns: An array of `d`-dimensional cells representing the boundary of the cell complex.
+
+Time complexity: `O(cells.length * (dimension(cells)^d + log(cells.length)))`
+
+`connectedComponents(cells[, vertex_count])`
+--------------------------------------------
+Splits a simplicial complex into its [connected components](http://en.wikipedia.org/wiki/Connected_component_(topology)).  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
+
+* `cells` is an array of cells
+* `vertex_count` (optional) is the result of calling `countVertices(cells)` or in other words is the total number of vertices.
+
+Returns: An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
+
+Time complexity:  
+
+* If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
+* If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
+
 `cloneCells(cells)`
 -------------------
 Makes a copy of a cell complex
@@ -95,15 +123,23 @@ Returns: A deep copy of the cell complex
 
 Time complexity: `O(cells.length * d)`
 
+
+`dimension(cells)`
+-----------------
+Returns: The dimension of the cell complex.
+
+Time complexity: `O(cells.length)`
+
+
 `countVertices(cells)`
 ----------------------
 An optimized way to get the number of 0-cells in a cell complex with dense, sequentially indexed vertices.  If `cells` has these properties, then:
 
-    countVertices(cells)
+    top.countVertices(cells)
     
 Is equivalent to:
 
-    skeleton(cells, 0).length
+    top.skeleton(cells, 0).length
 
 * `cells` is a cell complex
     
@@ -115,11 +151,11 @@ Time complexity:  `O(d * cells.length)`
 ------------------------------
 A more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  If `cells` is a complex with each occuring exactly once, then:
 
-    stars(cells)
+    top.stars(cells)
 
 Is equivalent to doing:
 
-    buildIndex(cells, skeleton(cells, 0), 0)
+    top.buildIndex(cells, top.skeleton(cells, 0), 0)
     
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then `countVertices()` is used internally to get the size of the cell complex.
@@ -127,6 +163,7 @@ Is equivalent to doing:
 Returns: An array of elements with the same length as `vertex_count` giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
 
 Time complexity:  `O(d * cells.length)`
+
 
 Credits
 =======

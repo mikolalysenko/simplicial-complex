@@ -12,6 +12,15 @@ function arr_equals(t, a, b) {
   }
 }
 
+test("dimension", function(t) {
+  t.equals(top.dimension([
+    [0],
+    [],
+    [1,2,3],
+    [4,5]
+  ]), 2);
+  t.end();
+});
 
 test("countVertices", function(t) {
 
@@ -94,5 +103,42 @@ test("skeleton", function(t) {
 
 test("findCell", function(t) {
 
+  var tris = [
+    [1,2,3],
+    [4,5,6],
+    [6,7,8],
+    [0],
+    [1,2,5]
+  ];
+
+  top.normalize(tris);
+  
+  
+  t.equals(top.findCell(tris, [3,8,9]), -1);
+  t.equals(top.findCell(tris, []), -1);
+  t.equals(top.findCell(tris, [10000]), -1);
+  t.equals(top.findCell(tris, [-1000]), -1);
+
+  //Test central item
+  var idx = top.findCell(tris, [6,4,5]);
+  t.ok(idx > 0);
+  t.equals(tris[idx][0], 4);
+  t.equals(tris[idx][1], 5);
+  t.equals(tris[idx][2], 6);
+
+  //Test lower extreme
+  t.equals(top.findCell(tris, [0], true), 0);
+  
+  //Test upper extreme
+  t.equals(top.findCell(tris, [6,7,8]), tris.length-1);
+
+  t.end();
 });
+
+test("buildIndex", function(t) {
+
+  
+
+});
+
 
