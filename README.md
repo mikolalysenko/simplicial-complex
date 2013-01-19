@@ -56,8 +56,8 @@ Is equivalent to:
     top.skeleton(cells, 0).length
 
 * `cells` is a cell complex
-    
-***Returns:** The number of vertices in the cell complex
+
+**Returns:** The number of vertices in the cell complex
 
 **Time complexity:**  `O(cells.length * d)`, where `d = dimension(cells)`
 
@@ -96,7 +96,7 @@ Canonicalizes a cell complex so that it is possible to compute `findCell` querie
 **Time complexity:** `O(d * log(cells.length) * cells.length )`
 
 ### `findCell(cells, c)`
-Finds the first index of cell `c` in a `normalize`d array of cells.
+Finds a lower bound on the first index of cell `c` in a `normalize`d array of cells.
 
 * `cells` is a `normalize`'d array of cells
 * `c` is a cell represented by an array of vertex indices

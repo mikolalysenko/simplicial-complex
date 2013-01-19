@@ -49,27 +49,27 @@ function compareCells(a, b) {
     case 1:
       return a[0] - b[0];
     case 2:
-      t = (a[0]^a[1]) - (b[0]^b[1]);
+      t = ((a[0]+a[1])&0xffffffff) - ((b[0]+b[1])&0xffffffff);
       if(t) {
         return t;
       }
-      return (a[0]&a[1]) - (b[0]&b[1]);
+      return ((a[0]*a[1])&0xffffffff) - ((b[0]*b[1])&0xffffffff);
     case 3:
-      var l0 = a[0]^a[1]
+      var l0 = (a[0]+a[1])&0xffffffff
         , l2 = a[2]
-        , m0 = b[0]^b[1]
-        , m2 = a[2];
-      t = (l2^l0) - (m2^m0);
+        , m0 = (b[0]+b[1])&0xffffffff
+        , m2 = b[2];
+      t = ((l2+l0)&0xffffffff) - ((m2+m0)&0xffffffff);
       if(t) {
         return t;
       }
-      var l1 = a[0]&a[1]
-        , m1 = b[0]&b[1];
-      t = (l2&l1) - (m2&m1);
+      var l1 = (a[0]*a[1])&0xffffffff
+        , m1 = (b[0]*b[1])&0xffffffff;
+      t = ((l2*l1)&0xffffffff) - ((m2*m1)&0xffffffff);
       if(t) {
         return t;
       }
-      return ((l2&l0)^l1) - ((m2&m0)^m1);
+      return (((l2*l0)&0xffffffff)+l1) - (((m2*m0)&0xffffffff)+m1);
       
     //TODO: Maybe optimize n=4 as well?
     
@@ -92,6 +92,7 @@ exports.compareCells = compareCells;
 //Puts a cell complex into normal order for the purposes of findCell queries
 function normalize(cells) {
   cells.sort(compareCells);
+  return cells;
 }
 exports.normalize = normalize;
 
@@ -99,12 +100,14 @@ exports.normalize = normalize;
 function findCell(cells, c) {
   var lo = 0
     , hi = cells.length-1
-    , r  = cells.length;
+    , r  = -1;
   while (lo <= hi) {
     var mid = (lo + hi) >> 1
       , s   = compareCells(cells[mid], c);
     if(s <= 0) {
-      r  = mid;
+      if(s === 0) {
+        r = mid;
+      }
       lo = mid + 1;
     } else if(s > 0) {
       hi = mid - 1;
@@ -131,10 +134,15 @@ function buildIndex(from_cells, to_cells) {
           b[l++] = c[j];
         }
       }
-      for(var idx=findCell(from_cells, b);
-        idx<from_cells.length && !compareCells(from_cells[idx], c);
-        ++idx) {
-          index[idx].push(i);
+      var idx=findCell(from_cells, b);
+      if(idx < 0) {
+        continue;
+      }
+      while(true) {
+        index[idx++].push(i);
+        if(idx >= from_cells.length || compareCells(from_cells[idx], b) === 0) {
+          break;
+        }
       }
     }
   }
