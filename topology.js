@@ -36,7 +36,113 @@ function cloneCells(cells) {
 }
 exports.cloneCells = cloneCells;
 
-//Computes the vertex stars for the mesh
+//Ranks a pair of cells up to permutation
+function compareCells(a, b) {
+  var n = a.length
+    , t = a.length - b.length;
+  if(t) {
+    return t;
+  }
+  switch(n) {
+    case 0:
+      return 0;
+    case 1:
+      return a[0] - b[0];
+    case 2:
+      t = (a[0]^a[1]) - (b[0]^b[1]);
+      if(t) {
+        return t;
+      }
+      return (a[0]&a[1]) - (b[0]&b[1]);
+    case 3:
+      var l0 = a[0]^a[1]
+        , l2 = a[2]
+        , m0 = b[0]^b[1]
+        , m2 = a[2];
+      t = (l2^l0) - (m2^m0);
+      if(t) {
+        return t;
+      }
+      var l1 = a[0]&a[1]
+        , m1 = b[0]&b[1];
+      t = (l2&l1) - (m2&m1);
+      if(t) {
+        return t;
+      }
+      return ((l2&l0)^l1) - ((m2&m0)^m1);
+      
+    //TODO: Maybe optimize n=4 as well?
+    
+    default:
+      var as = a.slice(0);
+      as.sort();
+      var bs = b.slice(0);
+      bs.sort();
+      for(var i=0; i<n; ++i) {
+        t = as[i] - bs[i];
+        if(t) {
+          return t;
+        }
+      }
+      return 0;
+  }
+}
+exports.compareCells = compareCells;
+
+//Puts a cell complex into normal order for the purposes of findCell queries
+function normalize(cells) {
+  cells.sort(compareCells);
+}
+exports.normalize = normalize;
+
+//Finds a cell in a normalized cell complex
+function findCell(cells, c) {
+  var lo = 0
+    , hi = cells.length-1
+    , r  = cells.length;
+  while (lo <= hi) {
+    var mid = (lo + hi) >> 1
+      , s   = compareCells(cells[mid], c);
+    if(s <= 0) {
+      r  = mid;
+      lo = mid + 1;
+    } else if(s > 0) {
+      hi = mid - 1;
+    }
+  }
+  return r;
+}
+exports.findCell = findCell;
+
+//Builds an index for an n-cell.  This is more general than stars, but less efficient
+function buildIndex(from_cells, to_cells) {
+  var index = new Array(from_cells.length);
+  for(var i=0; i<index.length; ++i) {
+    index[i] = [];
+  }
+  var b = [];
+  for(var i=0; i<to_cells.length; ++i) {
+    var c = to_cells[i];
+    for(var k=1; k<=(1<<c.length); ++k) {
+      b.length = bits.popCount(k);
+      var l = 0;
+      for(var j=0; j<c.length; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j];
+        }
+      }
+      for(var idx=findCell(from_cells, b);
+        idx<from_cells.length && !compareCells(from_cells[idx], c);
+        ++idx) {
+          index[idx].push(i);
+      }
+    }
+  }
+  return index;
+}
+exports.buildIndex = buildIndex;
+
+//Computes the vertex stars for the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
 function stars(cells, vertex_count) {
   if(!vertex_count) {
     vertex_count = countVertices(faces);
@@ -55,135 +161,59 @@ function stars(cells, vertex_count) {
 };
 exports.stars = stars;
 
-var lexCompare = new Function("a", "b", [
-  "for(var i=0; i<Math.min(a.length,b.length); ++i) {",
-    "var d = a[i] - b[i];",
-    "if(d) { return d; }",
-  "}",
-  "return a.length - b.length;"
-].join("\n"));
-
-//Sort cells, break orientation but facilitates indexing
-function normalize(cells) {
-  //Sort cells first
+//Enumerates all of the n-cycles of a cell complex (in more technical terms, the boundary operator with free coefficients)
+function cycles(cells, n) {
+  var result = []
+    , k0     = (1<<(n+1))-1;
   for(var i=0; i<cells.length; ++i) {
-    cells[i].sort();
+    var c = cells[i];
+    for(var k=k0; k<(1<<c.length); k=bits.nextCombination(k)) {
+      var b = new Array(n+1)
+        , l = 0;
+      for(var j=0; j<c.length; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j];
+        }
+      }
+      result.push(b);
+    }
   }
-  cells.sort(lexCompare);
-  //Remove duplicates
+  return result;
+}
+exports.cycles = cycles;
+
+//Computes the n-skeleton of a cell complex (in other words, the n-boundary operator in the homology over the Boolean semiring)
+function skeleton(cells, n) {
+  var res = cycles(cells, n);
+  normalize(res);
   var ptr = 1;
-  for(var i=1; i<cells.length; ++i) {
-    if(lexCompare(cells[i], cells[i-1])) {
+  for(var i=1; i<res.length; ++i) {
+    var a = res[i];
+    if(compareCells(a, res[i-1])) {
       if(i === ptr) {
         ptr++;
         continue;
       }
-      var a = cells[i]
-        , b = cells[ptr++];
+      var b = res[ptr++];
       b.length = a.length;
       for(var j=0; j<a.length; ++j) {
         b[j] = a[j];
       }
     }
   }
-  cells.length = ptr;
-  return cells;
-}
-exports.normalize = normalize;
-
-//Computes the n-skeleton of the cell complex
-function skeleton(cells, n) {
-  var skel = [];
-  for(var i=0; i<cells.length; ++i) {
-    var c = cells[i];
-    for(var k=(1<<(n+1))-1; k<(1<<c.length); k=bits.nextCombination(k)) {
-      var b = new Array(n+1)
-        , l = 0;
-      for(var j=0; j<c.length; ++j) {
-        if(k & (1<<j)) {
-          b[l++] = c[j];
-        }
-      }
-      skel.push(b);
-    }
-  }
-  return normalize(skel)
+  res.length = ptr;
+  return res;
 }
 exports.skeleton = skeleton;
 
-//Finds an ordered cell
-function findCell(cells, c, sorted) {
-  if(!sorted) {
-    c = c.slice(0);
-    c.sort();
-  }
-  var lo = 0
-    , hi = cells.length-1;
-  while (lo <= hi) {
-    var mid = (lo + hi) >> 1
-      , s   = lexCompare(cells[mid], c);
-    if(s < 0) {
-      lo = mid + 1;
-    } else if(s > 0) {
-      hi = mid - 1;
-    } else {
-      return mid;
-    }
-  }
-  return -1;
-}
-exports.findCell = findCell;
-
-//Builds an index for an n-cell.  This is more general than stars, but less efficient
-function buildIndex(from_cells, to_cells) {
-  var index = new Array(from_cells.length);
-  for(var i=0; i<index.length; ++i) {
-    index[i] = [];
-  }
-  for(var i=0; i<to_cells.length; ++i) {
-    var c = to_cells[i].slice(0);
-    c.sort();
-    for(var k=0; k<=(1<<c.length); ++k) {
-      var b = new Array(bits.popCount(k))
-        , l = 0;
-      for(var j=0; j<c.length; ++j) {
-        if(k & (1<<j)) {
-          b[l++] = c[j];
-        }
-      }
-      var idx = findCell(from_cells, b, true);
-      if(idx >= 0) {
-        index[idx].push(i);
-      }
-    }
-  }
-  return index;
-}
-exports.buildIndex = buildIndex;
-
-//The d-dimensional boundary operator
-function boundary(cells, d) {
-  //First, enumerate all d-cells in the complex
-  var res = [];
-  for(var i=0; i<cells.length; ++i) {
-    var c = cells[i].slice(0);
-    c.sort();
-    for(var k=(1<<(d+1))-1; k<(1<<c.length); k=bits.nextCombination(k)) {
-      var b = new Array(n+1)
-        , l = 0;
-      for(var j=0; j<c.length; ++j) {
-        if(k & (1<<j)) {
-          b[l++] = c[j];
-        }
-      }
-      res.push(b);
-    }
-  }
-  res.sort(lexCompare);
-  //Then remove all cells without parity = 1
-  var ptr = 0;
+//Computes the boundary operator in the Z/2 homology
+function boundary(cells, n) {
+  var res = cycles(cells, n);
+  res.sort(compareCells);
+  var ptr = 0
+    , i   = 0;
   while(true) {
-    while(i < res.length && lexCompare(res[i], res[i+1]) === 0) {
+    while(i < res.length && !compareCells(res[i], res[i+1])) {
       i += 2;
     }
     if(i >= res.length) {
@@ -199,7 +229,6 @@ function boundary(cells, d) {
   return res;
 }
 exports.boundary = boundary;
-
 
 //Computes connected components for a dense cell complex
 function connectedComponents_dense(cells, vertex_count) {
@@ -240,9 +269,9 @@ function connectedComponents_sparse(cells) {
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<c.length; ++j) {
-      var vj = findCell(vertices, [c[j]], true);
+      var vj = findCell(vertices, [c[j]]);
       for(var k=j+1; k<c.length; ++k) {
-        labels.link(vj, findCell(vertices, [c[k]], true));
+        labels.link(vj, findCell(vertices, [c[k]]));
       }
     }
   }
@@ -253,7 +282,7 @@ function connectedComponents_sparse(cells) {
     component_labels[i] = -1;
   }
   for(var i=0; i<cells.length; ++i) {
-    var l = labels.find(findCell(verts, [cells[i][0]], true));
+    var l = labels.find(findCell(verts, [cells[i][0]]));
     if(component_labels[l] < 0) {
       component_labels[l] = components.length;
       components.push([cells[i].slice(0)]);
@@ -272,5 +301,4 @@ function connectedComponents(cells, vertex_count) {
   return connectedComponents_sparse(cells);
 }
 exports.connectedComponents = connectedComponents;
-
 
