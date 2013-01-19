@@ -42,9 +42,9 @@ Generic
 -------
 
 ### `dimension(cells)`
-Returns: The dimension of the cell complex.
+**Returns:** The dimension of the cell complex.
 
-Time complexity: `O(cells.length)`
+**Time complexity:** `O(cells.length)`
 
 ### `countVertices(cells)`
 An optimized way to get the number of 0-cells in a cell complex with dense, sequentially indexed vertices.  If `cells` has these properties, then:
@@ -57,18 +57,18 @@ Is equivalent to:
 
 * `cells` is a cell complex
     
-Returns: The number of vertices in the cell complex
+***Returns:** The number of vertices in the cell complex
 
-Time complexity:  `O(cells.length * d)`, where `d = dimension(cells)`
+**Time complexity:**  `O(cells.length * d)`, where `d = dimension(cells)`
 
 ### `cloneCells(cells)`
 Makes a copy of a cell complex
 
 * `cells` is an array of cells
 
-Returns: A deep copy of the cell complex
+**Returns:** A deep copy of the cell complex
 
-Time complexity: `O(cells.length * d)`
+**Time complexity:** `O(cells.length * d)`
 
 Toplogical Indexing
 -------------------
@@ -79,19 +79,21 @@ Ranks a pair of cells relative to one another up to permutation.
 * `a` is a cell
 * `b` is a cell
 
-Returns a signed integer representing the relative rank:
+**Returns** a signed integer representing the relative rank:
 * < 0 : `a` comes before `b`
 * = 0 : `a = b` up to permutation
 * > 0 : `b` comes before `a`
 
-Time complexity: `O( a.length * log(a.length) )`
+**Time complexity:** `O( a.length * log(a.length) )`
 
 ### `normalize(cells)`
 Canonicalizes a cell complex so that it is possible to compute `findCell` queries.  Note that this function is done **in place**.  `cells` will be mutated.  If this is not acceptable, you should make a copy first using `cloneCells`.
 
 * `cells` is a complex.
 
-Time complexity: `O(d * log(cells.length) * cells.length )`
+**Returns** `cells`
+
+**Time complexity:** `O(d * log(cells.length) * cells.length )`
 
 ### `findCell(cells, c)`
 Finds the first index of cell `c` in a `normalize`d array of cells.
@@ -99,9 +101,9 @@ Finds the first index of cell `c` in a `normalize`d array of cells.
 * `cells` is a `normalize`'d array of cells
 * `c` is a cell represented by an array of vertex indices
 
-Returns: The index of `c` in the array if it exists, otherwise -1
+**Returns:** The index of `c` in the array if it exists, otherwise -1
 
-Time complexity: `O(d * log(d) * log(cells.length))`, where `d` is the max of the dimension of `cells` and `c`
+**Time complexity:** `O(d * log(d) * log(cells.length))`, where `d` is the max of the dimension of `cells` and `c`
 
 ### `buildIndex(from_cells, to_cells)`
 Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation).  This allows you to quickly find cells the in `to_cells` which are incident to cells in `from_cells`.
@@ -109,9 +111,9 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 * `from_cells` a `normalize`d array of cells
 * `to_cells` a list of cells which we are going to query against
 
-Returns: An array with the same length as `from_cells`, the `i`th entry of which is an array of indices into `to_cells` which are incident to `from_cells[i]`.
+**Returns:** An array with the same length as `from_cells`, the `i`th entry of which is an array of indices into `to_cells` which are incident to `from_cells[i]`.
 
-Time complexity: `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
+**Time complexity:** `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
 
 ### `stars(cells[, vertex_count])`
 A more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  If `cells` is a complex with each occuring exactly once, then:
@@ -125,9 +127,9 @@ Is equivalent to doing:
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then `countVertices()` is used internally to get the size of the cell complex.
 
-Returns: An array of elements with the same length as `vertex_count` giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
+**Returns:** An array of elements with the same length as `vertex_count` giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
 
-Time complexity:  `O(d * cells.length)`
+**Time complexity:** `O(d * cells.length)`
 
 Homology
 --------
@@ -138,9 +140,9 @@ Enumerates an exhaustive list of the set of all n-cycles in the complex.  Algebr
 * `cells` is an array of cells
 * `n` is the dimension of the cycles to compute
 
-Returns:  A list of all cycles
+**Returns:**  A list of all cycles
 
-Time complexity: `O(d^n * cells.length)`
+**Time complexity:** `O(d^n * cells.length)`
 
 
 ### `skeleton(cells, n)`
@@ -149,15 +151,15 @@ Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unorien
 * `cells` is a cell complex
 * `n` is the dimension of the skeleton to compute.
 
-Returns: A `normalize` array of all n-cells which are unique up to permutation.
+**Returns:** A `normalize` array of all n-cells which are unique up to permutation.
 
-Example:
+**Example:**
 
 * `skeleton(tris, 1)` returns all the edge in a triangular mesh
 * `skeleton(tets, 2)` returns all the faces of a tetrahedral mesh
 * `skeleton(cells, 0)` returns all the vertices of a mesh
 
-Time complexity:  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
+**Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
 
 ### `boundary(cells, n)`
 Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.  Algebraically, this is the same as evaluating the boundary operator in the Z/2 homology.
@@ -165,9 +167,9 @@ Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimens
 * `cells` is a cell complex.
 * `n` is the dimension of the boundary we are computing.
 
-Returns: A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
+**Returns:** A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
 
-Time complexity: `O((dimension(cells)^d + log(cells.length)) * cells.length)`
+**Time complexity:** `O((dimension(cells)^d + log(cells.length)) * cells.length)`
 
 
 Miscellaneous
@@ -179,10 +181,9 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 * `cells` is an array of cells
 * `vertex_count` (optional) is the result of calling `countVertices(cells)` or in other words is the total number of vertices.
 
-Returns: An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
+**Returns:** An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
 
-Time complexity:  
-
+**Time complexity:**
 * If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
 * If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
 
