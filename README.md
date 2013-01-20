@@ -1,21 +1,20 @@
-mesh-topology
-=============
+simplicial-complex
+==================
 
-Topological operations and indexing for oriented simplicial complexes (ie graphs, triangular and tetrahedral meshes, etc.) in node.js.
+Topological operations and indexing for simplicial complexes (ie graphs, triangular and tetrahedral meshes, etc.) in node.js.
 
 Usage
 =====
 
 First, you need to install the library using npm:
 
-    npm install mesh-topology
-
+    npm install simplical-complex
     
 And then in your scripts, you can just require it like usual:
 
-    var top = require("mesh-topology");
+    var top = require("simplicial-complex");
 
-Cell complexes in `mesh-topology` are represented as arrays of vertex indices.  For example, here is a triangular mesh:
+Simplicial complexes are represented as arrays of vertex indices.  For example, here is a triangular mesh:
 
     var tris = [
         [0,1,2],
