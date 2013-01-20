@@ -70,8 +70,8 @@ Makes a copy of a cell complex
 
 **Time complexity:** `O(cells.length * d)`
 
-Indexing
---------
+Indexing and Incidence
+----------------------
 
 ### `compareCells(a, b)`
 Ranks a pair of cells relative to one another up to permutation.
@@ -131,11 +131,11 @@ Is equivalent to doing:
 
 **Time complexity:** `O(d * cells.length)`
 
-Refinement
-----------
+Basic Topology
+--------------
 
 ### `subcells(cells, n)`
-Enumerates an exhaustive list of the set of all n cells in the complex.
+Enumerates all n cells in the complex.
 
 * `cells` is an array of cells
 * `n` is the dimension of the cycles to compute
@@ -146,7 +146,7 @@ Enumerates an exhaustive list of the set of all n cells in the complex.
 
 
 ### `skeleton(cells, n)`
-Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.
+Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.  This is the set of all unique n-cells up to permutation.
 
 * `cells` is a cell complex
 * `n` is the dimension of the skeleton to compute.
@@ -160,6 +160,18 @@ Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unorien
 * `skeleton(cells, 0)` returns all the vertices of a mesh
 
 **Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
+
+### `connectedComponents(cells[, vertex_count])`
+Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
+
+* `cells` is an array of cells
+* `vertex_count` (optional) is the result of calling `countVertices(cells)` or in other words is the total number of vertices.
+
+**Returns:** An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
+
+**Time complexity:**
+* If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
+* If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
 
 Homology
 --------
@@ -177,21 +189,6 @@ Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimens
 ### `cycles(cells, n)`
 
 
-
-Miscellaneous
--------------
-
-### `connectedComponents(cells[, vertex_count])`
-Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
-
-* `cells` is an array of cells
-* `vertex_count` (optional) is the result of calling `countVertices(cells)` or in other words is the total number of vertices.
-
-**Returns:** An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
-
-**Time complexity:**
-* If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
-* If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
 
 Credits
 =======
