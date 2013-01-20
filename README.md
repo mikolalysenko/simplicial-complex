@@ -1,12 +1,15 @@
 simplicial-complex
 ==================
 
-Topological operations and indexing for simplicial complexes (ie graphs, triangular and tetrahedral meshes, etc.) in node.js.
+This CommonJS module
+
+
+Topological operations and indexing for [simplicial complexes](http://en.wikipedia.org/wiki/Simplicial_complex) (ie graphs, triangular and tetrahedral meshes, etc.) in node.js.
 
 Usage
 =====
 
-First, you need to install the library using npm:
+First, you need to install the library using [npm](https://npmjs.org/):
 
     npm install simplical-complex
     
@@ -14,7 +17,7 @@ And then in your scripts, you can just require it like usual:
 
     var top = require("simplicial-complex");
 
-Simplicial complexes are represented as arrays of vertex indices.  For example, here is a triangular mesh:
+`simplicial-complex` represents cell complexes as arrays of arrays of vertex indices.  For example, here is a triangular mesh:
 
     var tris = [
         [0,1,2],
@@ -35,7 +38,7 @@ And here is how you would compute its edges using `mesh-topology`:
     //            [2,4],
     //            [3,4] ]
 
-The functionality `mesh-topology` can be broadly grouped into the following categories:
+The functionality in this library can be broadly grouped into the following categories:
 
 Generic
 -------
@@ -143,7 +146,6 @@ Enumerates all n cells in the complex.
 
 **Time complexity:** `O(d^n * cells.length)`
 
-
 ### `skeleton(cells, n)`
 Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.  This is the set of all unique n-cells up to permutation.
 
@@ -160,6 +162,16 @@ Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unorien
 
 **Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
 
+### `boundary(cells, n)`
+Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.  Algebraically, this is the same as evaluating the boundary operator in the Z/2 homology.
+
+* `cells` is a cell complex.
+* `n` is the dimension of the boundary we are computing.
+
+**Returns:** A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
+
+**Time complexity:** `O((d^n + log(cells.length)) * cells.length)`
+
 ### `connectedComponents(cells[, vertex_count])`
 Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
 
@@ -171,23 +183,6 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 **Time complexity:**
 * If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
 * If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
-
-Homology
---------
-
-### `boundary(cells, n)`
-Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.  Algebraically, this is the same as evaluating the boundary operator in the Z/2 homology.
-
-* `cells` is a cell complex.
-* `n` is the dimension of the boundary we are computing.
-
-**Returns:** A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
-
-**Time complexity:** `O((dimension(cells)^d + log(cells.length)) * cells.length)`
-
-### `cycles(cells, n)`
-
-
 
 Credits
 =======

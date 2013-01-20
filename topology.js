@@ -26,7 +26,7 @@ function countVertices(cells) {
 }
 exports.countVertices = countVertices;
 
-//Clone cells
+//Returns a deep copy of cells
 function cloneCells(cells) {
   var ncells = new Array(cells.length);
   for(var i=0; i<cells.length; ++i) {
@@ -126,7 +126,7 @@ function buildIndex(from_cells, to_cells) {
   var b = [];
   for(var i=0; i<to_cells.length; ++i) {
     var c = to_cells[i];
-    for(var k=1; k<=(1<<c.length); ++k) {
+    for(var k=1; k<(1<<c.length); ++k) {
       b.length = bits.popCount(k);
       var l = 0;
       for(var j=0; j<c.length; ++j) {
@@ -140,7 +140,7 @@ function buildIndex(from_cells, to_cells) {
       }
       while(true) {
         index[idx++].push(i);
-        if(idx >= from_cells.length || compareCells(from_cells[idx], b) === 0) {
+        if(idx >= from_cells.length || compareCells(from_cells[idx], b) !== 0) {
           break;
         }
       }
@@ -171,6 +171,9 @@ exports.stars = stars;
 
 //Enumerates all of the n-cells of a cell complex (in more technical terms, the boundary operator with free coefficients)
 function subcells(cells, n) {
+  if(n < 0) {
+    return [];
+  }
   var result = []
     , k0     = (1<<(n+1))-1;
   for(var i=0; i<cells.length; ++i) {
@@ -192,6 +195,9 @@ exports.subcells = subcells;
 
 //Computes the n-skeleton of a cell complex (in other words, the n-boundary operator in the homology over the Boolean semiring)
 function skeleton(cells, n) {
+  if(n < 0) {
+    return [];
+  }
   var res = subcells(cells, n);
   normalize(res);
   var ptr = 1;
@@ -214,8 +220,11 @@ function skeleton(cells, n) {
 }
 exports.skeleton = skeleton;
 
-//Computes the boundary operator in the Z/2 homology
+//Computes the nth boundary operator
 function boundary(cells, n) {
+  if(n < 0) {
+    return [];
+  }
   var res = subcells(cells, n);
   res.sort(compareCells);
   var ptr = 0
@@ -237,11 +246,6 @@ function boundary(cells, n) {
   return res;
 }
 exports.boundary = boundary;
-
-
-function cycles(cells, n) {
-
-}
 
 //Computes connected components for a dense cell complex
 function connectedComponents_dense(cells, vertex_count) {
@@ -309,5 +313,3 @@ function connectedComponents(cells, vertex_count) {
   return connectedComponents_sparse(cells);
 }
 exports.connectedComponents = connectedComponents;
-
-

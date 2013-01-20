@@ -159,24 +159,28 @@ test("findCell", function(t) {
 
 test("buildIndex", function(t) {
   var from_cells = top.normalize([
-    [0,1,2],
-    [0,1,3],
-    [0,2,3],
-    [1,2,3]
-  ]);
-  var to_cells = top.normalize([
     [0,1],
     [0,2],
     [1,2],
     [1,3],
     [2,3]
   ]);
+  var to_cells = top.normalize([
+    [0,1,2],
+    [0,1,3],
+    [0,2,3],
+    [1,2,3]
+  ]);
   
   var index = top.buildIndex(from_cells, to_cells);
   t.equals(index.length, from_cells.length);
   
-    
+  console.log(from_cells, to_cells);
   
+  for(var i=0; i<from_cells.length; ++i) {
+    var idx = index[i];
+    console.log(from_cells[i], idx);
+  }
   
   
   t.end();
