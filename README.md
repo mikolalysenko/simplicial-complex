@@ -70,8 +70,8 @@ Makes a copy of a cell complex
 
 **Time complexity:** `O(cells.length * d)`
 
-Toplogical Indexing
--------------------
+Indexing
+--------
 
 ### `compareCells(a, b)`
 Ranks a pair of cells relative to one another up to permutation.
@@ -131,11 +131,11 @@ Is equivalent to doing:
 
 **Time complexity:** `O(d * cells.length)`
 
-Homology
---------
+Refinement
+----------
 
-### `cycles(cells, n)`
-Enumerates an exhaustive list of the set of all n-cycles in the complex.  Algebraically, this is the boundary operator in the free homology ring.
+### `subcells(cells, n)`
+Enumerates an exhaustive list of the set of all n cells in the complex.
 
 * `cells` is an array of cells
 * `n` is the dimension of the cycles to compute
@@ -146,7 +146,7 @@ Enumerates an exhaustive list of the set of all n-cycles in the complex.  Algebr
 
 
 ### `skeleton(cells, n)`
-Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.  Algebraically, this is the same as taking the boundary operator in homology with coefficients in the Boolean semiring.
+Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.
 
 * `cells` is a cell complex
 * `n` is the dimension of the skeleton to compute.
@@ -161,6 +161,9 @@ Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unorien
 
 **Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
 
+Homology
+--------
+
 ### `boundary(cells, n)`
 Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.  Algebraically, this is the same as evaluating the boundary operator in the Z/2 homology.
 
@@ -170,6 +173,10 @@ Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimens
 **Returns:** A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
 
 **Time complexity:** `O((dimension(cells)^d + log(cells.length)) * cells.length)`
+
+### `cycles(cells, n)`
+
+
 
 Miscellaneous
 -------------

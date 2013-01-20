@@ -169,8 +169,8 @@ function stars(cells, vertex_count) {
 };
 exports.stars = stars;
 
-//Enumerates all of the n-cycles of a cell complex (in more technical terms, the boundary operator with free coefficients)
-function cycles(cells, n) {
+//Enumerates all of the n-cells of a cell complex (in more technical terms, the boundary operator with free coefficients)
+function subcells(cells, n) {
   var result = []
     , k0     = (1<<(n+1))-1;
   for(var i=0; i<cells.length; ++i) {
@@ -188,11 +188,11 @@ function cycles(cells, n) {
   }
   return result;
 }
-exports.cycles = cycles;
+exports.subcells = subcells;
 
 //Computes the n-skeleton of a cell complex (in other words, the n-boundary operator in the homology over the Boolean semiring)
 function skeleton(cells, n) {
-  var res = cycles(cells, n);
+  var res = subcells(cells, n);
   normalize(res);
   var ptr = 1;
   for(var i=1; i<res.length; ++i) {
@@ -216,7 +216,7 @@ exports.skeleton = skeleton;
 
 //Computes the boundary operator in the Z/2 homology
 function boundary(cells, n) {
-  var res = cycles(cells, n);
+  var res = subcells(cells, n);
   res.sort(compareCells);
   var ptr = 0
     , i   = 0;
@@ -237,6 +237,11 @@ function boundary(cells, n) {
   return res;
 }
 exports.boundary = boundary;
+
+
+function cycles(cells, n) {
+
+}
 
 //Computes connected components for a dense cell complex
 function connectedComponents_dense(cells, vertex_count) {
