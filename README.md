@@ -171,7 +171,6 @@ Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimens
 
 **Time complexity:** `O((dimension(cells)^d + log(cells.length)) * cells.length)`
 
-
 Miscellaneous
 -------------
 
@@ -186,9 +185,6 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 **Time complexity:**
 * If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
 * If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
-
-
-
 
 Credits
 =======

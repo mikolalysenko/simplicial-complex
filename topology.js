@@ -240,7 +240,6 @@ exports.boundary = boundary;
 
 //Computes connected components for a dense cell complex
 function connectedComponents_dense(cells, vertex_count) {
-  //Link vertices by cell
   var labels = new UnionFind(vertex_count);
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
@@ -250,7 +249,6 @@ function connectedComponents_dense(cells, vertex_count) {
       }
     }
   }
-  //Split connected components apart
   var components = []
     , component_labels = labels.ranks;
   for(var i=0; i<component_labels.length; ++i) {
@@ -270,10 +268,8 @@ function connectedComponents_dense(cells, vertex_count) {
 
 //Computes connected components for a sparse graph
 function connectedComponents_sparse(cells) {
-  //First compute the 1-skeleton
-  var verts = skeleton(cells, 0);
-  //Link vertices by cell
-  var labels = new UnionFind(verts.length);
+  var verts = skeleton(cells, 0)
+    , labels = new UnionFind(verts.length);
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<c.length; ++j) {
@@ -283,7 +279,6 @@ function connectedComponents_sparse(cells) {
       }
     }
   }
-  //Split connected components apart
   var components = []
     , component_labels = labels.ranks;
   for(var i=0; i<component_labels.length; ++i) {
@@ -309,4 +304,5 @@ function connectedComponents(cells, vertex_count) {
   return connectedComponents_sparse(cells);
 }
 exports.connectedComponents = connectedComponents;
+
 
