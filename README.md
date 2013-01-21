@@ -13,17 +13,24 @@ In an oriented abstract simplicial complex, the edges of a graph are replaced by
 * [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices.
 * [cells](http://en.wikipedia.org/wiki/Simplex) : A finite collection of ordered [tuples](http://en.wikipedia.org/wiki/Tuple) of vertices.
 
-For example, triangular meshes (as commonly used in computer graphics) are an instance of simplicial complexes where each cell has exactly 3 elements.  A more restricted example of a simplicial complex is the notion of a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph), which is basically what you get when you forget the ordering of each cell.
+We say that the dimension of each cell is just its length - 1.  For example:
 
-We say that the dimension 
-
-* 0-cells: Vertices
-* 1-cells: Edges
-* 2-cells: Faces/triangles
-* 3-cells: Volumes/tetrahedra
+* -1 - cells: The empty cell
+* 0 - cells: Vertices
+* 1 - cells: Edges
+* 2 - cells: Faces/triangles
+* 3 - cells: Volumes/tetrahedra
 *  ...
 * n-cells: n-simplices
 
+You probably already know of many examples of simplicial complexes.  Triangular meshes (as commonly used in computer graphics) are an instance of simplicial complexes where each cell has exactly 3 elements.  A more restricted example of a simplicial complex is the notion of a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph), which is basically what you get when you forget the ordering of each cell.
+
+There are many ways to represent abstract simplicial complexes, but the two most basic forms are:
+
+* (Adjacency List) A flat list of cells
+* (Adjacency Polynomial) As a collection of tensors, K0, K1, ..., Kn, where Kn(v0, v2, ..., vn) = 1 if the simplex (v0, v1, ..., vn) is in the complex and 0 otherwise.
+
+The first approach generalizes the [adjacency list](http://en.wikipedia.org/wiki/Adjacency_list) storage format for a graph, while the second form generalizes the [adjacency matrix](http://en.wikipedia.org/wiki/Adjacency_matrix).  In the first case, the storage scales linearly as O(v + d * c), while in the later case the storage scales as O(v^d).  When the total number of cells is very large and d is very small, adjacency matrix representations may be acceptable.  On the other hand, for large values of d adjacency lists scale far better.  As a result, we categorically adopt the first form as our representation.
 
 Usage
 =====
@@ -44,7 +51,7 @@ And then in your scripts, you can just require it like usual:
         [2,3,4]
       ];
       
-And here is how you would compute its edges using `mesh-topology`:
+And here is how you would compute its edges:
 
     var edges = top.skeleton(tris, 1);
     
@@ -139,7 +146,7 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 
 
 ### `dual(cells[, vertex_count])`
-Computes the dual of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
+Computes the [dual](http://en.wikipedia.org/wiki/Hypergraph#Incidence_matrix) of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
 
     top.dual(cells)
 
