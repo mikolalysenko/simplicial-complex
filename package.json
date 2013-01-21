@@ -1,6 +1,6 @@
 {
   "name": "simplicial-complex",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Topological indexing for simplicial complexes",
   "main": "topology.js",
   "dependencies": {
