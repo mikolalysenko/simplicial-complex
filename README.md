@@ -88,10 +88,11 @@ Ranks a pair of cells relative to one another up to permutation.
 
 **Time complexity:** `O( a.length * log(a.length) )`
 
-### `normalize(cells)`
+### `normalize(cells[, attr])`
 Canonicalizes a cell complex so that it is possible to compute `findCell` queries.  Note that this function is done **in place**.  `cells` will be mutated.  If this is not acceptable, you should make a copy first using `cloneCells`.
 
 * `cells` is a complex.
+* `attr` is an optional array of per-cell properties which is permuted alongside `cells`
 
 **Returns** `cells`
 

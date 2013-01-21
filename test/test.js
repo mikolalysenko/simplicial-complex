@@ -188,11 +188,40 @@ test("buildIndex", function(t) {
 
 test("stars", function(t) {
   
+  var cells = top.normalize([
+    [1,2,3],
+    [0],
+    [5,6,7],
+    [8,3],
+    [4,6],
+    [2,5],
+    [2,7],
+    [2,0]
+  ]);
+  
+  //Compute vertex stars
+  console.log(cells);
+  var stars = top.stars(cells);
+  console.log(stars);
+  t.equals(stars.length, 9);
+  
   
   t.end();
 });
 
 test("boundary", function(t) {
+
+  var tris = top.normalize([
+    [0,1,2],
+    [0,1,3],
+    [0,2,3],
+    [1,2,3]
+  ]);
+  
+  var tetra = [[0,1,2,3]];
+  arr_equals(t,top.boundary(tetra,2), tris);
+  arr_equals(t,top.boundary(tris,1), []);
+  
   t.end();
 });
 

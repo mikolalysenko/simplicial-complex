@@ -89,8 +89,24 @@ function compareCells(a, b) {
 }
 exports.compareCells = compareCells;
 
+function compareZipped(a, b) {
+  return compareCells(a[0], b[0]);
+}
+
 //Puts a cell complex into normal order for the purposes of findCell queries
-function normalize(cells) {
+function normalize(cells, attr) {
+  if(attr) {
+    var zipped = new Array(cells.length);
+    for(var i=0; i<cells.length; ++i) {
+      zipped[i] = [cells[i], arr[i]];
+    }
+    zipped.sort(compareZipped);
+    for(var i=0; i<cells.length; ++i) {
+      cells[i] = zipped[i][0];
+      attr[i] = zipped[i][1];
+    }
+    return cells
+  }
   cells.sort(compareCells);
   return cells;
 }
@@ -153,19 +169,19 @@ exports.buildIndex = buildIndex;
 //Computes the vertex stars for the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
 function stars(cells, vertex_count) {
   if(!vertex_count) {
-    vertex_count = countVertices(faces);
+    vertex_count = countVertices(cells);
   }
-  var stars = new Array(vertex_count);
+  var res = new Array(vertex_count);
   for(var i=0; i<vertex_count; ++i) {
-    stars[i] = [];
+    res[i] = [];
   }
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<c.length; ++j) {
-      stars[c[j]].push(i);
+      res[c[j]].push(i);
     }
   }
-  return stars;
+  return res;
 };
 exports.stars = stars;
 
@@ -230,7 +246,7 @@ function boundary(cells, n) {
   var ptr = 0
     , i   = 0;
   while(true) {
-    while(i < res.length && !compareCells(res[i], res[i+1])) {
+    while(i < res.length-1 && compareCells(res[i], res[i+1]) === 0) {
       i += 2;
     }
     if(i >= res.length) {
@@ -238,7 +254,7 @@ function boundary(cells, n) {
     }
     var a = res[ptr++]
       , b = res[i++];
-    for(var j=0; j<=d; ++d) {
+    for(var j=0; j<=n; ++j) {
       a[j] = b[j];
     }
   }
