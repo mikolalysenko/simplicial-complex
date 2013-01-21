@@ -310,7 +310,7 @@ function connectedComponents_sparse(cells) {
     component_labels[i] = -1;
   }
   for(var i=0; i<cells.length; ++i) {
-    var l = labels.find(findCell(verts, [cells[i][0]]));
+    var l = labels.find(findCell(vertices, [cells[i][0]]));
     if(component_labels[l] < 0) {
       component_labels[l] = components.length;
       components.push([cells[i].slice(0)]);
