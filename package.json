@@ -5,7 +5,7 @@
   "main": "topology.js",
   "dependencies": {
     "bit-twiddle": "~0.0.1",
-    "union-find": "~0.0.1"
+    "union-find": "~0.0.3"
   },
   "devDependencies": {
     "tap": "*"

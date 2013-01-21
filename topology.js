@@ -293,8 +293,8 @@ function connectedComponents_dense(cells, vertex_count) {
 
 //Computes connected components for a sparse graph
 function connectedComponents_sparse(cells) {
-  var verts = skeleton(cells, 0)
-    , labels = new UnionFind(verts.length);
+  var vertices  = skeleton(cells, 0)
+    , labels    = new UnionFind(vertices.length);
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<c.length; ++j) {
@@ -304,8 +304,8 @@ function connectedComponents_sparse(cells) {
       }
     }
   }
-  var components = []
-    , component_labels = labels.ranks;
+  var components        = []
+    , component_labels  = labels.ranks;
   for(var i=0; i<component_labels.length; ++i) {
     component_labels[i] = -1;
   }

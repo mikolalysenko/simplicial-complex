@@ -225,12 +225,22 @@ test("boundary", function(t) {
   t.end();
 });
 
-test("connectedComponents_sparse", function(t) {
+test("connectedComponents", function(t) {
+
+  var graph = top.normalize([
+    [0,1],
+    [1,2],
+    [2,3],
+    [5,6],
+    [4],
+    [4,7,8]
+  ]);
+  
+  console.log(top.connectedComponents(graph));
+  console.log(top.connectedComponents(graph,9));
+  
   t.end();
 });
 
-test("connectedComponents_dense", function(t) {
-  t.end();
-});
 
 
