@@ -181,6 +181,7 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 **Returns:** An array of cell complexes, one per each connected component.  Note that these complexes are not normalized.
 
 **Time complexity:**
+
 * If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
 * If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
 

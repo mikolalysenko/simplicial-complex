@@ -182,13 +182,13 @@ test("buildIndex", function(t) {
     console.log(from_cells[i], idx);
   }
   
-  
   t.end();
 });
 
 
-
 test("stars", function(t) {
+  
+  
   t.end();
 });
 
@@ -197,7 +197,6 @@ test("boundary", function(t) {
 });
 
 test("connectedComponents_sparse", function(t) {
-
   t.end();
 });
 
