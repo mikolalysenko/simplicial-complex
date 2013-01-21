@@ -133,7 +133,7 @@ function findCell(cells, c) {
 }
 exports.findCell = findCell;
 
-//Builds an index for an n-cell.  This is more general than stars, but less efficient
+//Builds an index for an n-cell.  This is more general than dual, but less efficient
 function buildIndex(from_cells, to_cells) {
   var index = new Array(from_cells.length);
   for(var i=0; i<index.length; ++i) {
@@ -166,10 +166,10 @@ function buildIndex(from_cells, to_cells) {
 }
 exports.buildIndex = buildIndex;
 
-//Computes the vertex stars for the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
-function stars(cells, vertex_count) {
+//Computes the dual of the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
+function dual(cells, vertex_count) {
   if(!vertex_count) {
-    vertex_count = countVertices(cells);
+    return buildIndex(skeleton(cells, 0), cells, 0);
   }
   var res = new Array(vertex_count);
   for(var i=0; i<vertex_count; ++i) {
@@ -183,7 +183,7 @@ function stars(cells, vertex_count) {
   }
   return res;
 };
-exports.stars = stars;
+exports.dual = dual;
 
 //Enumerates all of the n-cells of a cell complex (in more technical terms, the boundary operator with free coefficients)
 function subcells(cells, n) {

@@ -186,7 +186,7 @@ test("buildIndex", function(t) {
 });
 
 
-test("stars", function(t) {
+test("dual", function(t) {
   
   var cells = top.normalize([
     [1,2,3],
@@ -200,11 +200,13 @@ test("stars", function(t) {
   ]);
   
   //Compute vertex stars
-  console.log(cells);
-  var stars = top.stars(cells);
-  console.log(stars);
-  t.equals(stars.length, 9);
+  console.log("Cells = ", cells);
+  var stars = top.dual(cells);
+  console.log("Dual (sparse) = ", stars);
   
+  var tstars = top.dual(cells, 9);
+  console.log("Dual (dense) = ", tstars);
+  arr_equals(t, stars, tstars);
   
   t.end();
 });

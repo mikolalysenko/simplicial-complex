@@ -1,10 +1,29 @@
 simplicial-complex
 ==================
 
-This CommonJS module
+This CommonJS module implements basic topological operations and indexing for [abstract simplicial complexes](http://en.wikipedia.org/wiki/Abstract_simplicial_complex) (ie graphs, triangular and tetrahedral meshes, etc.) in JavaScript.
 
+A [simplicial complex](http://en.wikipedia.org/wiki/Abstract_simplicial_complex) is a higher dimensional generalization of the usual concept of a [(directed) graph](http://en.wikipedia.org/wiki/Graph_\(mathematics\)).  Recall that a graph is represented by a pair of sets called:
 
-Topological operations and indexing for [simplicial complexes](http://en.wikipedia.org/wiki/Simplicial_complex) (ie graphs, triangular and tetrahedral meshes, etc.) in node.js.
+* [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices.
+* [edges](http://en.wikipedia.org/wiki/Edge_\(graph_theory\)) : A finite collection of ordered pairs of vertices.
+
+In an oriented abstract simplicial complex, the edges of a graph are replaced by a higher dimensional concept general concept called the cells.  Again:
+
+* [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices.
+* [cells](http://en.wikipedia.org/wiki/Simplex) : A finite collection of ordered [tuples](http://en.wikipedia.org/wiki/Tuple) of vertices.
+
+For example, triangular meshes (as commonly used in computer graphics) are an instance of simplicial complexes where each cell has exactly 3 elements.  A more restricted example of a simplicial complex is the notion of a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph), which is basically what you get when you forget the ordering of each cell.
+
+We say that the dimension 
+
+* 0-cells: Vertices
+* 1-cells: Edges
+* 2-cells: Faces/triangles
+* 3-cells: Volumes/tetrahedra
+*  ...
+* n-cells: n-simplices
+
 
 Usage
 =====
@@ -118,19 +137,20 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 
 **Time complexity:** `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
 
-### `stars(cells[, vertex_count])`
-A more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  If `cells` is a complex with each occuring exactly once, then:
 
-    top.stars(cells)
+### `dual(cells[, vertex_count])`
+Computes the dual of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
+
+    top.dual(cells)
 
 Is equivalent to doing:
 
     top.buildIndex(cells, top.skeleton(cells, 0), 0)
     
 * `cells` is a cell complex
-* `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then `countVertices()` is used internally to get the size of the cell complex.
+* `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then it calls `buildIndex(cells, skeleton(cells,0), 0))`
 
-**Returns:** An array of elements with the same length as `vertex_count` giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
+**Returns:** An array of elements with the same length as `vertex_count` (if specified) or `skeleton(cells,0)` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
 
 **Time complexity:** `O(d * cells.length)`
 
