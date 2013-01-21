@@ -144,6 +144,8 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 
 **Time complexity:** `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
 
+Basic Topology
+--------------
 
 ### `dual(cells[, vertex_count])`
 Computes the [dual](http://en.wikipedia.org/wiki/Hypergraph#Incidence_matrix) of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
@@ -157,12 +159,9 @@ Is equivalent to doing:
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then it calls `buildIndex(cells, skeleton(cells,0), 0))`
 
-**Returns:** An array of elements with the same length as `vertex_count` (if specified) or `skeleton(cells,0)` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory)) as indexed arrays of cells.
+**Returns:** An array of elements with the same length as `vertex_count` (if specified) or `skeleton(cells,0)` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory\)) as indexed arrays of cells.
 
 **Time complexity:** `O(d * cells.length)`
-
-Basic Topology
---------------
 
 ### `subcells(cells, n)`
 Enumerates all n cells in the complex.
