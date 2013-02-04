@@ -189,13 +189,12 @@ Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unorien
 
 **Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
 
-### `boundary(cells, n)`
-Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of a cell complex.  For example, in a triangular mesh `boundary(tris, 1)` gives an array of all the boundary edges of the mesh; or `boundary(tets, 2)` gives an array of all boundary faces.  Algebraically, this is the same as evaluating the boundary operator in the Z/2 homology.
+### `boundary(cells)`
+Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of all cells, including duplicates.
 
 * `cells` is a cell complex.
-* `n` is the dimension of the boundary we are computing.
 
-**Returns:** A `normalize`d array of `n`-dimensional cells representing the boundary of the cell complex.
+**Returns:** An array of cells representing the boundary of the cell complex.
 
 **Time complexity:** `O((d^n + log(cells.length)) * cells.length)`
 

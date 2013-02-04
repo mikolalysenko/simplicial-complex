@@ -221,8 +221,7 @@ test("boundary", function(t) {
   ]);
   
   var tetra = [[0,1,2,3]];
-  arr_equals(t,top.boundary(tetra,2), tris);
-  arr_equals(t,top.boundary(tris,1), []);
+  arr_equals(t,top.normalize(top.boundary(tetra,2)), tris);
   
   t.end();
 });

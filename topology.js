@@ -49,27 +49,25 @@ function compareCells(a, b) {
     case 1:
       return a[0] - b[0];
     case 2:
-      t = ((a[0]+a[1])&0xffffffff) - ((b[0]+b[1])&0xffffffff);
-      if(t) {
-        return t;
+      var d = a[0]+a[1]-b[0]-b[1];
+      if(d) {
+        return d;
       }
-      return ((a[0]*a[1])&0xffffffff) - ((b[0]*b[1])&0xffffffff);
+      return Math.min(a[0],a[1]) - Math.min(b[0],b[1]);
     case 3:
-      var l0 = (a[0]+a[1])&0xffffffff
-        , l2 = a[2]
-        , m0 = (b[0]+b[1])&0xffffffff
-        , m2 = b[2];
-      t = ((l2+l0)&0xffffffff) - ((m2+m0)&0xffffffff);
-      if(t) {
-        return t;
+      var l1 = a[0]+a[1]
+        , m1 = b[0]+b[1];
+      d = l1+a[2] - (m1+b[2]);
+      if(d) {
+        return d;
       }
-      var l1 = (a[0]*a[1])&0xffffffff
-        , m1 = (b[0]*b[1])&0xffffffff;
-      t = ((l2*l1)&0xffffffff) - ((m2*m1)&0xffffffff);
-      if(t) {
-        return t;
+      var l0 = Math.min(a[0], a[1])
+        , m0 = Math.min(b[0], b[1])
+        , d  = Math.min(l0, a[2]) - Math.min(m0, b[2]);
+      if(d) {
+        return d;
       }
-      return (((l2*l0)&0xffffffff)+l1) - (((m2*m0)&0xffffffff)+m1);
+      return Math.min(l0+a[2], l1) - Math.min(m0+b[2], m1);
       
     //TODO: Maybe optimize n=4 as well?
     
@@ -106,9 +104,10 @@ function normalize(cells, attr) {
       attr[i] = zipped[i][1];
     }
     return cells
+  } else {
+    cells.sort(compareCells);
+    return cells;
   }
-  cells.sort(compareCells);
-  return cells;
 }
 exports.normalize = normalize;
 
@@ -186,7 +185,7 @@ function dual(cells, vertex_count) {
 exports.dual = dual;
 
 //Enumerates all of the n-cells of a cell complex (in more technical terms, the boundary operator with free coefficients)
-function subcells(cells, n) {
+function fullSkeleton(cells, n) {
   if(n < 0) {
     return [];
   }
@@ -207,14 +206,14 @@ function subcells(cells, n) {
   }
   return result;
 }
-exports.subcells = subcells;
+exports.fullSkeleton = fullSkeleton;
 
 //Computes the n-skeleton of a cell complex (in other words, the n-boundary operator in the homology over the Boolean semiring)
 function skeleton(cells, n) {
   if(n < 0) {
     return [];
   }
-  var res = subcells(cells, n);
+  var res = fullSkeleton(cells, n);
   normalize(res);
   var ptr = 1;
   for(var i=1; i<res.length; ++i) {
@@ -236,29 +235,21 @@ function skeleton(cells, n) {
 }
 exports.skeleton = skeleton;
 
-//Computes the nth boundary operator
-function boundary(cells, n) {
-  if(n < 0) {
-    return [];
-  }
-  var res = subcells(cells, n);
-  res.sort(compareCells);
-  var ptr = 0
-    , i   = 0;
-  while(true) {
-    while(i < res.length-1 && compareCells(res[i], res[i+1]) === 0) {
-      i += 2;
-    }
-    if(i >= res.length) {
-      break;
-    }
-    var a = res[ptr++]
-      , b = res[i++];
-    for(var j=0; j<=n; ++j) {
-      a[j] = b[j];
+//Computes the boundary of all cells, does not remove duplicates
+function boundary(cells) {
+  var res = [];
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i];
+    for(var j=0; j<c.length; ++j) {
+      var b = new Array(c.length-1);
+      for(var k=0, l=0; k<c.length; ++k) {
+        if(k !== j) {
+          b[l++] = c[k];
+        }
+      }
+      res.push(b);
     }
   }
-  res.length = ptr;
   return res;
 }
 exports.boundary = boundary;
