@@ -66,8 +66,8 @@ And here is how you would compute its edges:
 
 The functionality in this library can be broadly grouped into the following categories:
 
-Generic
--------
+Structural
+----------
 
 ### `dimension(cells)`
 **Returns:** The dimension of the cell complex.
@@ -98,8 +98,6 @@ Makes a copy of a cell complex
 
 **Time complexity:** `O(cells.length * d)`
 
-Indexing and Incidence
-----------------------
 
 ### `compareCells(a, b)`
 Ranks a pair of cells relative to one another up to permutation.
@@ -120,9 +118,18 @@ Canonicalizes a cell complex so that it is possible to compute `findCell` querie
 * `cells` is a complex.
 * `attr` is an optional array of per-cell properties which is permuted alongside `cells`
 
-**Returns** `cells`
+**Returns:** `cells`
 
 **Time complexity:** `O(d * log(cells.length) * cells.length )`
+
+### `unique(cells)`
+Removes all duplicate cells from the complex.  Note that this is done **in place**.  `cells` will be mutated.  If this is not acceptable, make a copy of `cells` first.
+
+* `cells` is a `normalize`d complex
+
+**Returns:** `cells`
+
+**Time complexity:** `O(cells.length)`
 
 ### `findCell(cells, c)`
 Finds a lower bound on the first index of cell `c` in a `normalize`d array of cells.
@@ -134,8 +141,30 @@ Finds a lower bound on the first index of cell `c` in a `normalize`d array of ce
 
 **Time complexity:** `O(d * log(d) * log(cells.length))`, where `d` is the max of the dimension of `cells` and `c`
 
-### `buildIndex(from_cells, to_cells)`
-Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation).  This allows you to quickly find cells the in `to_cells` which are incident to cells in `from_cells`.
+Topological
+-----------
+
+### `explode(cells)`
+Enumerates all cells in the complex, with duplicates
+
+* `cells` is an array of cells
+
+**Returns:** A list of all cells in the complex
+
+**Time complexity:** `O(2^d * cells.length)`
+
+### `skeleton(cells, n)`
+Enumerates all n cells in the complex, with duplicates
+
+* `cells` is an array of cells
+* `n` is the dimension of the cycles to compute
+
+**Returns:**  A list of all n-cells
+
+**Time complexity:** `O(d^n * cells.length)`
+
+### `incidence(from_cells, to_cells)`
+Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation) (aka a sparse incidence matrix).  This allows you to quickly find the cells in `to_cells` which are incident to cells in `from_cells`.
 
 * `from_cells` a `normalize`d array of cells
 * `to_cells` a list of cells which we are going to query against
@@ -144,9 +173,6 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 
 **Time complexity:** `O(from_cells.length + d * 2^d * log(from_cells.length) * to_cells.length)`, where `d = max(dimension(from_cells), dimension(to_cells))`.
 
-Basic Topology
---------------
-
 ### `dual(cells[, vertex_count])`
 Computes the [dual](http://en.wikipedia.org/wiki/Hypergraph#Incidence_matrix) of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
 
@@ -154,7 +180,7 @@ Computes the [dual](http://en.wikipedia.org/wiki/Hypergraph#Incidence_matrix) of
 
 Is equivalent to doing:
 
-    top.buildIndex(cells, top.skeleton(cells, 0), 0)
+    top.buildIndex(cells, top.unique(top.normalize(top.skeleton(cells, 0))), 0)
     
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then it calls `buildIndex(cells, skeleton(cells,0), 0))`
@@ -162,41 +188,6 @@ Is equivalent to doing:
 **Returns:** An array of elements with the same length as `vertex_count` (if specified) or `skeleton(cells,0)` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory\)) as indexed arrays of cells.
 
 **Time complexity:** `O(d * cells.length)`
-
-### `subcells(cells, n)`
-Enumerates all n cells in the complex.
-
-* `cells` is an array of cells
-* `n` is the dimension of the cycles to compute
-
-**Returns:**  A list of all cycles
-
-**Time complexity:** `O(d^n * cells.length)`
-
-### `skeleton(cells, n)`
-Computes the [n-skeleton](http://en.wikipedia.org/wiki/N-skeleton) of an unoriented simplicial complex.  This is the set of all unique n-cells up to permutation.
-
-* `cells` is a cell complex
-* `n` is the dimension of the skeleton to compute.
-
-**Returns:** A `normalize` array of all n-cells which are unique up to permutation.
-
-**Example:**
-
-* `skeleton(tris, 1)` returns all the edge in a triangular mesh
-* `skeleton(tets, 2)` returns all the faces of a tetrahedral mesh
-* `skeleton(cells, 0)` returns all the vertices of a mesh
-
-**Time complexity:**  `O( n^d * cells.length )`, where d is the `dimension` of the cell complex
-
-### `boundary(cells)`
-Computes the <a href="http://en.wikipedia.org/wiki/Boundary_(topology)">d-dimensional boundary</a> of all cells, including duplicates.
-
-* `cells` is a cell complex.
-
-**Returns:** An array of cells representing the boundary of the cell complex.
-
-**Time complexity:** `O((d^n + log(cells.length)) * cells.length)`
 
 ### `connectedComponents(cells[, vertex_count])`
 Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.

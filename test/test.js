@@ -85,14 +85,14 @@ test("normalize", function(t) {
 test("skeleton", function(t) {
 
   var r = [[1,2,3]];
-  arr_equals(t, top.skeleton(r,1), [
+  arr_equals(t, top.unique(top.normalize(top.skeleton(r,1))), [
     [1,2],
     [1,3],
     [2,3]
   ]);
   
   var h = [[1,2,3],[2,3,4]];
-  arr_equals(t, top.skeleton(h, 1), [
+  arr_equals(t, top.unique(top.normalize(top.skeleton(h, 1))), [
     [1,2],
     [1,3],
     [2,3],
@@ -101,7 +101,7 @@ test("skeleton", function(t) {
   ]);
   
   var k = [[1,2,3,4,5,6,7,8]];
-  arr_equals(t, top.skeleton(k, 0), [
+  arr_equals(t, top.normalize(top.skeleton(k, 0)), [
     [1],
     [2],
     [3],
@@ -172,7 +172,7 @@ test("buildIndex", function(t) {
     [1,2,3]
   ]);
   
-  var index = top.buildIndex(from_cells, to_cells);
+  var index = top.incidence(from_cells, to_cells);
   t.equals(index.length, from_cells.length);
   
   console.log(from_cells, to_cells);

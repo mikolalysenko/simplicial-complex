@@ -111,6 +111,24 @@ function normalize(cells, attr) {
 }
 exports.normalize = normalize;
 
+//Removes all duplicate cells in the complex
+function unique(cells) {
+  var ptr = 1;
+  for(var i=1; i<cells.length; ++i) {
+    var a = cells[i];
+    if(compareCells(a, cells[i-1])) {
+      if(i === ptr) {
+        ptr++;
+        continue;
+      }
+      cells[ptr++] = a;
+    }
+  }
+  cells.length = ptr;
+  return cells;
+}
+exports.unique = unique;
+
 //Finds a cell in a normalized cell complex
 function findCell(cells, c) {
   var lo = 0
@@ -133,7 +151,7 @@ function findCell(cells, c) {
 exports.findCell = findCell;
 
 //Builds an index for an n-cell.  This is more general than dual, but less efficient
-function buildIndex(from_cells, to_cells) {
+function incidence(from_cells, to_cells) {
   var index = new Array(from_cells.length);
   for(var i=0; i<index.length; ++i) {
     index[i] = [];
@@ -163,12 +181,12 @@ function buildIndex(from_cells, to_cells) {
   }
   return index;
 }
-exports.buildIndex = buildIndex;
+exports.incidence = incidence;
 
 //Computes the dual of the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
 function dual(cells, vertex_count) {
   if(!vertex_count) {
-    return buildIndex(skeleton(cells, 0), cells, 0);
+    return incidence(unique(normalize(skeleton(cells, 0))), cells, 0);
   }
   var res = new Array(vertex_count);
   for(var i=0; i<vertex_count; ++i) {
@@ -184,8 +202,26 @@ function dual(cells, vertex_count) {
 };
 exports.dual = dual;
 
-//Enumerates all of the n-cells of a cell complex (in more technical terms, the boundary operator with free coefficients)
-function fullSkeleton(cells, n) {
+//Enumerates all cells in the complex
+function explode(cells) {
+  var result = [];
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i];
+    for(var j=1; j<1<<c.length; ++j) {
+      var b = [];
+      for(var k=0; k<c.length; ++k) {
+        if(j & (1<<k)) {
+          b.push(c[k]);
+        }
+      }
+    }
+  }
+  return result;
+}
+exports.explode = explode;
+
+//Enumerates all of the n-cells of a cell complex
+function skeleton(cells, n) {
   if(n < 0) {
     return [];
   }
@@ -205,33 +241,6 @@ function fullSkeleton(cells, n) {
     }
   }
   return result;
-}
-exports.fullSkeleton = fullSkeleton;
-
-//Computes the n-skeleton of a cell complex (in other words, the n-boundary operator in the homology over the Boolean semiring)
-function skeleton(cells, n) {
-  if(n < 0) {
-    return [];
-  }
-  var res = fullSkeleton(cells, n);
-  normalize(res);
-  var ptr = 1;
-  for(var i=1; i<res.length; ++i) {
-    var a = res[i];
-    if(compareCells(a, res[i-1])) {
-      if(i === ptr) {
-        ptr++;
-        continue;
-      }
-      var b = res[ptr++];
-      b.length = a.length;
-      for(var j=0; j<a.length; ++j) {
-        b[j] = a[j];
-      }
-    }
-  }
-  res.length = ptr;
-  return res;
 }
 exports.skeleton = skeleton;
 
@@ -284,7 +293,7 @@ function connectedComponents_dense(cells, vertex_count) {
 
 //Computes connected components for a sparse graph
 function connectedComponents_sparse(cells) {
-  var vertices  = skeleton(cells, 0)
+  var vertices  = unique(normalize(skeleton(cells, 0)))
     , labels    = new UnionFind(vertices.length);
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
