@@ -75,19 +75,9 @@ Structural
 **Time complexity:** `O(cells.length)`
 
 ### `countVertices(cells)`
-An optimized way to get the number of 0-cells in a cell complex with dense, sequentially indexed vertices.  If `cells` has these properties, then:
-
-    top.countVertices(cells)
-    
-Is equivalent to:
-
-    top.skeleton(cells, 0).length
-
-* `cells` is a cell complex
-
 **Returns:** The number of vertices in the cell complex
 
-**Time complexity:**  `O(cells.length * d)`, where `d = dimension(cells)`
+**Time complexity:**  `O(cells.length * dimension(cells))`
 
 ### `cloneCells(cells)`
 Makes a copy of a cell complex
@@ -96,7 +86,7 @@ Makes a copy of a cell complex
 
 **Returns:** A deep copy of the cell complex
 
-**Time complexity:** `O(cells.length * d)`
+**Time complexity:** `O(cells.length * dimension(cells))`
 
 
 ### `compareCells(a, b)`
@@ -120,7 +110,7 @@ Canonicalizes a cell complex so that it is possible to compute `findCell` querie
 
 **Returns:** `cells`
 
-**Time complexity:** `O(d * log(cells.length) * cells.length )`
+**Time complexity:** `O(dimension(cells) * cells.length * log(cells.length) )`
 
 ### `unique(cells)`
 Removes all duplicate cells from the complex.  Note that this is done **in place**.  `cells` will be mutated.  If this is not acceptable, make a copy of `cells` first.
@@ -139,7 +129,7 @@ Finds a lower bound on the first index of cell `c` in a `normalize`d array of ce
 
 **Returns:** The index of `c` in the array if it exists, otherwise -1
 
-**Time complexity:** `O(d * log(d) * log(cells.length))`, where `d` is the max of the dimension of `cells` and `c`
+**Time complexity:** `O(d * log(d) * log(cells.length))`, where `d = max(dimension(cells), c.length)`
 
 Topological
 -----------
@@ -161,7 +151,7 @@ Enumerates all n cells in the complex, with duplicates
 
 **Returns:**  A list of all n-cells
 
-**Time complexity:** `O(d^n * cells.length)`
+**Time complexity:** `O(dimension(cells)^n * cells.length)`
 
 ### `incidence(from_cells, to_cells)`
 Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation) (aka a sparse incidence matrix).  This allows you to quickly find the cells in `to_cells` which are incident to cells in `from_cells`.
@@ -187,7 +177,7 @@ Is equivalent to doing:
 
 **Returns:** An array of elements with the same length as `vertex_count` (if specified) or `skeleton(cells,0)` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory\)) as indexed arrays of cells.
 
-**Time complexity:** `O(d * cells.length)`
+**Time complexity:** `O(dimension(cells) * cells.length)`
 
 ### `connectedComponents(cells[, vertex_count])`
 Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Connected_component_(topology)">connected components</a>.  If `vertex_count` is specified, we assume that the cell complex is dense -- or in other words the vertices of the cell complex is the set of integers [0, vertex_count).  This allows for a slightly more efficient implementation.  If unspecified, a more general but less efficient sparse algorithm is used.
@@ -199,8 +189,8 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 
 **Time complexity:**
 
-* If `vertex_count` is specified:  `O(vertex_count + d^2 * cells.length)`
-* If `vertex_count` is not specified: `O(d^3 * log(cells.length) * cells.length)`
+* If `vertex_count` is specified:  `O(vertex_count + dimension(cells)^2 * cells.length)`
+* If `vertex_count` is not specified: `O(dimension(cells)^3 * log(cells.length) * cells.length)`
 
 Credits
 =======
