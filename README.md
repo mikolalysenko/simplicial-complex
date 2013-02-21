@@ -141,7 +141,7 @@ Enumerates all cells in the complex, with duplicates
 
 **Returns:** A list of all cells in the complex
 
-**Time complexity:** `O(2^d * cells.length)`
+**Time complexity:** `O(2^dimension(cells) * cells.length)`
 
 ### `skeleton(cells, n)`
 Enumerates all n cells in the complex, with duplicates
