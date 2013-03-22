@@ -39,7 +39,7 @@ Recall that for graphs, there are two basic ways we can represent them:
 The first form is better for sparse graphs, while the latter may be more efficient if the graph is dense.  These techniques directly generalize to simplicial complexes as well, and suggest two basic strategies:
 
 * **Adjacency List**: A flat list of cells
-* **Adjacency Tensor**: As a (n+1)^d dimensional tensor, where the ith entry represents
+* **Adjacency Tensor**: As a (n+1)^d dimensional tensor, where the each entry represents a cell
 
 The first approach generalizes the [adjacency list](http://en.wikipedia.org/wiki/Adjacency_list) storage format for a graph, while the second form generalizes the [adjacency matrix](http://en.wikipedia.org/wiki/Adjacency_matrix).  In the first case, the storage scales linearly as O(v + d * c), while in the later case the storage scales as O(v^d).  When the total number of cells is very large and d is very small, adjacency matrix representations may be acceptable.  On the other hand, for large values of d adjacency lists scale far better.  As a result, we categorically adopt the first form as our representation.
 
