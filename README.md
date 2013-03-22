@@ -3,34 +3,47 @@ simplicial-complex
 
 This CommonJS module implements basic topological operations and indexing for [abstract simplicial complexes](http://en.wikipedia.org/wiki/Abstract_simplicial_complex) (ie graphs, triangular and tetrahedral meshes, etc.) in JavaScript.
 
-A [simplicial complex](http://en.wikipedia.org/wiki/Abstract_simplicial_complex) is a higher dimensional generalization of the usual concept of a [(directed) graph](http://en.wikipedia.org/wiki/Graph_\(mathematics\)).  Recall that a graph is represented by a pair of sets called:
+What is an (abstract) simplicial complex?
+-----------------------------------------
+
+An [abstract simplicial complex](http://en.wikipedia.org/wiki/Abstract_simplicial_complex) is a higher dimensional generalization of the concept of a [(directed) graph](http://en.wikipedia.org/wiki/Graph_\(mathematics\)), and it plays a fundamental role in computational geometry.  Recall that a graph is represented by a pair of sets called:
 
 * [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices.
 * [edges](http://en.wikipedia.org/wiki/Edge_\(graph_theory\)) : A finite collection of ordered pairs of vertices.
 
-In an oriented abstract simplicial complex, the edges of a graph are replaced by a higher dimensional concept general concept called the cells.  Again:
+In an oriented abstract simplicial complex, the edges of a graph are replaced by higher dimensional structures called *cells* or *simplices*, which are represented by ordered tuples of vertices.  And so we can represent a simplicial complex using the following data:
 
-* [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices.
+* [vertices](http://en.wikipedia.org/wiki/Vertex_\(graph_theory\)) : A finite collection of labels/indices. (Same as before)
 * [cells](http://en.wikipedia.org/wiki/Simplex) : A finite collection of ordered [tuples](http://en.wikipedia.org/wiki/Tuple) of vertices.
 
-We say that the dimension of each cell is just its length - 1.  For example:
+We say that the dimension of each cell is one less than the length of its tuple.  For example, here are some common names for various n-dimensional cells:
 
 * -1 - cells: The empty cell
 * 0 - cells: Vertices
 * 1 - cells: Edges
 * 2 - cells: Faces/triangles
-* 3 - cells: Volumes/tetrahedra
+* 3 - cells: Volumes/tetrahedra/solids
 *  ...
-* n-cells: n-simplices
+* n-cells: n-simplices/facets
 
-You probably already know of many examples of simplicial complexes.  Triangular meshes (as commonly used in computer graphics) are an instance of simplicial complexes where each cell has exactly 3 elements.  A more restricted example of a simplicial complex is the notion of a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph), which is basically what you get when you forget the ordering of each cell.
+You probably already know of many examples of simplicial complexes.  Triangular meshes (as commonly used in computer graphics) are just 2d simplicial complexes; as are [Delaunay triangulations](http://en.wikipedia.org/wiki/Delaunay_triangulation).  A more restricted example of a simplicial complex is the notion of a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph), which is basically what you get when you forget the ordering of each cell.
 
-There are many ways to represent abstract simplicial complexes, but the two most basic forms are:
+How does this library work?
+---------------------------
 
-* (Adjacency List) A flat list of cells
-* (Adjacency Polynomial) As a collection of tensors, K0, K1, ..., Kn, where Kn(v0, v2, ..., vn) = 1 if the simplex (v0, v1, ..., vn) is in the complex and 0 otherwise.
+Recall that for graphs, there are two basic ways we can represent them:
+
+* [Adjacency Lists](http://en.wikipedia.org/wiki/Adjacency_list): A list of edges
+* [Adjacency Matrices](http://en.wikipedia.org/wiki/Adjacency_matrix): A table of all edge-vertex incidences
+
+The first form is better for sparse graphs, while the latter may be more efficient if the graph is dense.  These techniques directly generalize to simplicial complexes as well, and suggest two basic strategies:
+
+* **Adjacency List**: A flat list of cells
+* **Adjacency Tensor**: As a (n+1)^d dimensional tensor, where the ith entry represents
 
 The first approach generalizes the [adjacency list](http://en.wikipedia.org/wiki/Adjacency_list) storage format for a graph, while the second form generalizes the [adjacency matrix](http://en.wikipedia.org/wiki/Adjacency_matrix).  In the first case, the storage scales linearly as O(v + d * c), while in the later case the storage scales as O(v^d).  When the total number of cells is very large and d is very small, adjacency matrix representations may be acceptable.  On the other hand, for large values of d adjacency lists scale far better.  As a result, we categorically adopt the first form as our representation.
+
+In an adjacency list, it is trivial to test if a lower dimensional cell is incident to a higher dimensional.  However, if executed naively the reverse operation can be very inefficient.  (For example, finding all of the edges incident to a particular vertex would take O(number of edges) time if no preprocessing were used.)  To avoid having to do this, we introduce the concept of a *topological index*
 
 Usage
 =====
@@ -41,28 +54,34 @@ First, you need to install the library using [npm](https://npmjs.org/):
     
 And then in your scripts, you can just require it like usual:
 
-    var top = require("simplicial-complex");
+```javascript
+var top = require("simplicial-complex")
+```
 
 `simplicial-complex` represents cell complexes as arrays of arrays of vertex indices.  For example, here is a triangular mesh:
 
-    var tris = [
-        [0,1,2],
-        [1,2,3],
-        [2,3,4]
-      ];
-      
+```javascript
+var tris = [
+    [0,1,2],
+    [1,2,3],
+    [2,3,4]
+  ]
+```
+
 And here is how you would compute its edges:
 
-    var edges = top.skeleton(tris, 1);
-    
-    //Result:
-    //  edges = [ [0,1],
-    //            [0,2],
-    //            [1,2],
-    //            [1,3],
-    //            [2,3],
-    //            [2,4],
-    //            [3,4] ]
+```javascript
+var edges = top.unique(top.skeleton(tris, 1))
+
+//Result:
+//  edges = [ [0,1],
+//            [0,2],
+//            [1,2],
+//            [1,3],
+//            [2,3],
+//            [2,4],
+//            [3,4] ]
+```
 
 The functionality in this library can be broadly grouped into the following categories:
 
@@ -139,9 +158,9 @@ Enumerates all cells in the complex, with duplicates
 
 * `cells` is an array of cells
 
-**Returns:** A list of all cells in the complex
+**Returns:** A normalized list of all cells in the complex
 
-**Time complexity:** `O(2^dimension(cells) * cells.length)`
+**Time complexity:** `O(2^dimension(cells) * dimension(cells) * cells.length * log(cells.length))`
 
 ### `skeleton(cells, n)`
 Enumerates all n cells in the complex, with duplicates
@@ -149,9 +168,18 @@ Enumerates all n cells in the complex, with duplicates
 * `cells` is an array of cells
 * `n` is the dimension of the cycles to compute
 
-**Returns:**  A list of all n-cells
+**Returns:**  A normalized list of all n-cells
 
-**Time complexity:** `O(dimension(cells)^n * cells.length)`
+**Time complexity:** `O(dimension(cells)^n * cells.length * log(cells.length))`
+
+### `boundary(cells)`
+Enumerates all boundary cells of the cell complex
+
+* `cells` is an array of cells
+
+**Returns:** A normalized list of cells
+
+**Time complexity:** `O(dimension(cells) * cells.length * log(cells.length))`
 
 ### `incidence(from_cells, to_cells)`
 Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_mesh#Summary_of_mesh_representation) (aka a sparse incidence matrix).  This allows you to quickly find the cells in `to_cells` which are incident to cells in `from_cells`.
@@ -166,12 +194,18 @@ Builds an index for [neighborhood queries](http://en.wikipedia.org/wiki/Polygon_
 ### `dual(cells[, vertex_count])`
 Computes the [dual](http://en.wikipedia.org/wiki/Hypergraph#Incidence_matrix) of the complex.  An important application of this is that it gives a more optimized way to build an index for vertices for cell complexes with sequentially enumerated vertices.  For example,
 
-    top.dual(cells)
+```javascript
+top.dual(cells)
+```
 
-Is equivalent to doing:
+Is equivalent to finding the incidence relation for all vertices, or in other words doing:
 
-    top.buildIndex(cells, top.unique(top.normalize(top.skeleton(cells, 0))), 0)
-    
+```javascript
+top.incidence(top.unique(top.skeleton(cells, 0)), cells)
+```
+
+For the arguments:
+
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then it calls `buildIndex(cells, skeleton(cells,0), 0))`
 
