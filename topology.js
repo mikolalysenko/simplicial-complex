@@ -214,15 +214,17 @@ exports.dual = dual
 //Enumerates all cells in the complex
 function explode(cells) {
   var result = []
-  for(var i=0; i<cells.length; ++i) {
+  for(var i=0, il=cells.length; i<il; ++i) {
     var c = cells[i]
-    for(var j=1; j<1<<c.length; ++j) {
+      , cl = c.length|0
+    for(var j=1, jl=(1<<cl); j<jl; ++j) {
       var b = []
-      for(var k=0; k<c.length; ++k) {
-        if(j & (1<<k)) {
+      for(var k=0; k<cl; ++k) {
+        if((j >>> k) & 1) {
           b.push(c[k])
         }
       }
+      result.push(b)
     }
   }
   return normalize(result)

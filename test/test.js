@@ -226,6 +226,27 @@ test("boundary", function(t) {
   t.end();
 });
 
+test("explode", function(t) {
+
+  var e = top.normalize(top.explode([[0,1,2]]))
+  console.log(e)
+  
+  arr_equals(t, e, top.normalize([
+    [0],
+    [1],
+    [2],
+    [0,1],
+    [1,2],
+    [2,0],
+    [0,1,2]
+  ]))
+  
+
+  t.end()
+})
+
+
+
 test("connectedComponents", function(t) {
 
   var graph = top.normalize([
