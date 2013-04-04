@@ -27,6 +27,8 @@ test("countVertices", function(t) {
     [1000, 1]
   ]), 1001);
   
+  t.equals(top.countVertices([]), 0)
+  
   t.end();
 });
 

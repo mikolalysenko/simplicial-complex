@@ -16,7 +16,7 @@ exports.dimension = dimension
 
 //Counts the number of vertices in faces
 function countVertices(cells) {
-  var vc = 0
+  var vc = -1
     , max = Math.max
   for(var i=0, il=cells.length; i<il; ++i) {
     var c = cells[i]
