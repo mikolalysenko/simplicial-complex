@@ -50,7 +50,7 @@ Usage
 
 First, you need to install the library using [npm](https://npmjs.org/):
 
-    npm install simplical-complex
+    npm install simplicial-complex
     
 And then in your scripts, you can just require it like usual:
 
