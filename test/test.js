@@ -1,4 +1,4 @@
-var test = require("tap").test
+var test = require("tape")
   , top = require("../topology.js");
 
 function arr_equals(t, a, b) {

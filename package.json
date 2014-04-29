@@ -1,17 +1,14 @@
 {
   "name": "simplicial-complex",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "description": "Topological indexing for simplicial complexes",
   "main": "topology.js",
   "dependencies": {
-    "bit-twiddle": "~0.0.1",
-    "union-find": "~0.0.3"
-  },
-  "devDependencies": {
-    "tap": "*"
+    "bit-twiddle": "^1.0.0",
+    "union-find": "^1.0.0"
   },
   "scripts": {
-    "test": "tap ./test/"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +34,8 @@
   "author": "Mikola Lysenko",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "gitHead": "24aa75407005c898a4171dcc1e97215a261b3b79"
+  "gitHead": "24aa75407005c898a4171dcc1e97215a261b3b79",
+  "devDependencies": {
+    "tape": "^2.12.3"
+  }
 }
