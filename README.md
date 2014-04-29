@@ -228,5 +228,4 @@ Splits a simplicial complex into its <a href="http://en.wikipedia.org/wiki/Conne
 
 Credits
 =======
-(c) 2013 Mikola Lysenko.  MIT License
-
+(c) 2013-2014 Mikola Lysenko.  MIT License
