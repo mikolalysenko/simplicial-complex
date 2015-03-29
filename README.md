@@ -209,7 +209,7 @@ For the arguments:
 * `cells` is a cell complex
 * `vertex_count` is an optional parameter giving the number of vertices in the cell complex.  If not specified, then it calls `top.incidence(top.unique(top.skeleton(cells, 0)), cells)`
 
-**Returns:** An array of elements with the same length as `vertex_count` (if specified) or `unique(skeleton(cells,0))` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_(graph_theory\)) as indexed arrays of cells.
+**Returns:** An array of elements with the same length as `vertex_count` (if specified) or `unique(skeleton(cells,0))` otherwise giving the [vertex stars of the mesh](http://en.wikipedia.org/wiki/Star_\(graph_theory\)) as indexed arrays of cells.
 
 **Time complexity:** `O(dimension(cells) * cells.length)`
 
